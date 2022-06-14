@@ -31,5 +31,3 @@ def kaito(kai):
                 print("不正解です,またチャレンジして下さい")
             return 0
         print("正解です")
-
-        
