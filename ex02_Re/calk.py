@@ -13,8 +13,8 @@ def button_click(event):
         entry.insert(tk.END,num)
 
 
-def click_CE(event):
-    entry.delete("0","end")
+# def click_CE(event):
+#     entry.delete("0","end")
 
 def click_C(event):
     entry.delete("0","end")
@@ -41,10 +41,12 @@ x,y = 1,1
 
 for i, num in enumerate(["%","CE","C","B","1/x","**","**(1/2)","/","7","8","9","*","4","5","6","-","1","2","3","+","+/-","0",".","="],1):
     btn=tk.Button(root, text=num, font=("Times New Roman", 30),fg="#ffffff",bg="#000000")
+    #文字コード紹介
+     #ffffff は 白色 #000000　は　黒色
     btn.bind("<1>", button_click)
     btn.grid(row=x, column=y)
     if  num=="CE":
-        btn.bind("<1>", click_CE)
+        btn.bind("<1>", click_C)
     elif num=="C":
         btn.bind("<1>", click_C)
     elif num=="B":
