@@ -13,12 +13,6 @@ def key_up(event):
 
 def main_proc():
     global cx,cy,key,mx,my
-    # delta = {#キー：押されているキーkey/値：移動幅リスト[x,y]
-    #     "Up"   :[0, -20],
-    #     "Down" :[0, +20],
-    #     "Left" :[-20, 0],
-    #     "Right":[+20, 0],}
-    # cx, cy = cx+delta[key][0], cy+delta[key][1]
     if key=="Up" and maze_bg[my-1][mx]==0:my-=1
     if key == "Down" and maze_bg[my+1][mx]==0:my+=1
     if key == "Left" and maze_bg[my][mx-1]==0:mx-=1
