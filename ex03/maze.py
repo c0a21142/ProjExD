@@ -1,7 +1,8 @@
 import tkinter as tk
 import tkinter.messagebox as tkm
 import maze_maker as mm
-
+import wave
+import winsound as ws
 def key_down(event):
     global key
     key = event.keysym
@@ -23,8 +24,19 @@ def main_proc():
     if key == "Left" and maze_bg[my][mx-1]==0:mx-=1
     if key == "Right" and maze_bg[my][mx+1]==0:mx+=1
     cx,cy=mx*100+50,my*100+50
+    if cx==1350 and cy==750:
+        tkm.showinfo("おめでとうございます","無限ループに陥りました")
+    canvas.create_rectangle(cx-50, cy-50, cx+50, cy+50, fill="red",tag="bg")
+
+    canvas.lift("tori", "bg")
     canvas.coords("tori",cx,cy)
     root.after(100,main_proc)
+
+# def sound():
+#     base=tk.Tk()
+#     base2=tk.Tk()
+#     sound_file="なんでしょう?.wav"
+# channel=sounds.play(loop=sd_loop)
 
 if __name__ == "__main__":
     
@@ -38,14 +50,17 @@ if __name__ == "__main__":
     mx=1
     my=1
     tori = tk.PhotoImage(file="fig/5.png")
+    tori2 = tk.PhotoImage(file="fig/5.png")
     mx,my=1,1
     cx,cy = 300,400
     canvas.create_image(cx,cy,image=tori,tag="tori")
+    canvas.create_image(1350, 750, image=tori2, tag="tori2")
     key = ""
     root.bind("<KeyPress>",key_down)
 
     root.bind("<KeyRelease>",key_up)
 
     main_proc()
-
+    sound_name="sample.wav"
+    ws.PlaySound(sound_name,ws.SND_ALIAS)
     root.mainloop()
