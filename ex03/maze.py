@@ -36,6 +36,8 @@ if __name__ == "__main__":
 
     canvas = tk.Canvas(width=1500,height=900,bg="black")
     canvas.pack()
+    maze_bg=mm.make_maze(15,9)
+    print(maze_bg)
 
     tori = tk.PhotoImage(file="fig/5.png")
     cx,cy = 300,400
