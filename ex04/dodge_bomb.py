@@ -1,6 +1,9 @@
 import pygame as pg
 import sys
 import random
+import time
+import pygame.mixer
+
 
 def main():
     #練習1
@@ -18,6 +21,9 @@ def main():
     kkimg_rect.center=900,400
     sc_sfc.blit(kkimg_sfc, kkimg_rect)
 
+    pg.mixer.init(frequency=44100) #BGMを読み込む
+    pg.mixer.music.load("ONGEN.mp3")
+    pg.mixer.music.play(1)
     #練習5
     bmimg_sfc=pg.Surface((20,20)) #Surface
     bmimg_sfc.set_colorkey((0,0,0))
@@ -27,10 +33,14 @@ def main():
     bmimg_rect.centery=random.randint(0,sc_rect.height)
     sc_sfc.blit(bgimg_sfc,bmimg_rect)
     vx,vy=+1,+1
+    font = pg.font.Font(None, 300)
+    conf_font =  pg.font.Font(None, 100)
+    conflict=0
 
     while True:
         sc_sfc.blit(bgimg_sfc,bgimg_rect)
-
+        text2 = conf_font.render(f"{conflict}conflicts", True, (255,255,255))
+        sc_sfc.blit(text2, [0,0])
     #練習2
         for event in pg.event.get():
             if event.type==pg.QUIT:return
@@ -55,11 +65,22 @@ def main():
         yoko,tate=check_bound(bmimg_rect,sc_rect)
         vx*=yoko
         vy*=tate
+        
 
-        if kkimg_rect.colliderect(bmimg_rect): return
+        if kkimg_rect.colliderect(bmimg_rect):
+            text = font.render("GAME OVER", True, (255,0,0))   # 描画する文字列の設定
+            sc_sfc.blit(text, [200,300])
+            pg.display.update()
+            vx=0
+            vy=0
+            time.sleep(5)
+            return
+
 
         pg.display.update()
         clock.tick(1000)
+
+
 
 def check_bound(rct, scr_rct):#Rect, Rect
     #画面内: +1 画面外:-1
