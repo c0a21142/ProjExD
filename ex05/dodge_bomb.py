@@ -1,6 +1,8 @@
 import pygame as pg
 import sys
 import random
+import time
+import pygame.mixer
 
 
 class Screen:
@@ -44,6 +46,8 @@ class Bird:
             if key_states[pg.K_RIGHT]: 
                 self.rct.centerx -= 1
         self.blit(scr)
+    def attack(self):
+        return Shot(self)
 
 
 class Bomb:
@@ -66,81 +70,82 @@ class Bomb:
         self.vy *= tate
         self.blit(scr)
 
+class Shot: #追加機能4
+    def __init__(self,chr:Bird):
+        self.sfc=pg.image.load("fig/beam.png")
+        self.sfc=pg.transform(self.sfc,0,0.1)
+        self.rct.midright=chr.rct.center
+    
+    def blit(self,scr):
+        scr.sfc.blit(self.sfc,self.rct)
+    
+    def update(self,scr):
+        self.rct.move_ip(+10,0)
+        if check_bound(self.rct,scr.rct)!=(1,1):
+            del self
+        self.blit(scr)
+
+class Addfunction: 
+    def __init__(self):
+        self.speed = 1.5
+        self.conflict = 0
+        self.font= pg.font.Font(None, 300)
+        self.conf_font = pg.font.Font(None, 100)
+    def show_conflict(self,screen, bombs):
+        for _ in bombs:
+            x, y = check_bound(screen.rect, _.rect)
+            if (x, y) != (1,1):
+                self.conflict+=1
+
+        text2 = self.conf_font.render(f"{self.conflict}conflicts", True, (255,255,255)) # 描画する
+        screen.disp.blit(text2, [0,0])# 文字列の表示位置
+
+    def GameOver(self,scr): #追加機能その1
+        text2 = self.font.render("GAME OVER", True, (255,0,0)) # 描画する文字列の設定
+        self.blit(scr)# 文字列の表示位置
+        pg.display.update()
+        time.sleep(5)
+
+    def speedup(self, screen, bombs): #追加機能その2
+        for _ in bombs:
+            x, y = check_bound(screen.rect, _.rect)
+            if (x, y) != (1,1):
+                _.vx *= x*self.speed #yoko
+                _.vy *= -y*self.speed #tate
+
 
 def main():
+    pg.mixer.init(frequency=44100) #追加機能その3
+    pg.mixer.music.load("ONGEN.mp3")
+    pg.mixer.music.play(-1)
+    time.sleep(1000)
+    pg.mixer.stop()
     clock = pg.time.Clock()
-
-    # 練習1：スクリーンと背景画像
-    # pg.display.set_caption("逃げろ！こうかとん")
-    # screen_sfc = pg.display.set_mode((1600, 900)) # Surface
-    # screen_rct = screen_sfc.get_rect()            # Rect
-    # bgimg_sfc = pg.image.load("fig/pg_bg.jpg")    # Surface
-    # bgimg_rct = bgimg_sfc.get_rect()              # Rect
-    # screen_sfc.blit(bgimg_sfc, bgimg_rct)
+    check_Add=Addfunction()
     scr=Screen("逃げろ!こうかとん",(1600,900),"fig/pg_bg.jpg")
-
-    # 練習3：こうかとん
-    # kkimg_sfc = pg.image.load("fig/6.png")    # Surface
-    # kkimg_sfc = pg.transform.rotozoom(kkimg_sfc, 0, 2.0)  # Surface
-    # kkimg_rct = kkimg_sfc.get_rect()          # Rect
-    # kkimg_rct.center = 900, 400
     kkt=Bird("fig/6.png",2.0,(900,400))
-
-
-    # 練習5：爆弾
-    # bmimg_sfc = pg.Surface((20, 20)) # Surface
-    # bmimg_sfc.set_colorkey((0, 0, 0)) 
-    # pg.draw.circle(bmimg_sfc, (255, 0, 0), (10, 10), 10)
-    # bmimg_rct = bmimg_sfc.get_rect() # Rect
-    # bmimg_rct.centerx = random.randint(0, screen_rct.width)
-    # bmimg_rct.centery = random.randint(0, screen_rct.height)
-    # vx, vy = +1, +1 # 練習6
     bkd=Bomb((255,0,0),10,(+1,+1),scr)
+
+
 
     while True:
         scr.blit()
-        # screen_sfc.blit(bgimg_sfc, bgimg_rct)
 
-        # 練習2
         for event in pg.event.get():
             if event.type == pg.QUIT: return
-
-        # 練習4
-        # key_states = pg.key.get_pressed() # 辞書
-        # if key_states[pg.K_UP]    == True: kkimg_rct.centery -= 1
-        # if key_states[pg.K_DOWN]  == True: kkimg_rct.centery += 1
-        # if key_states[pg.K_LEFT]  == True: kkimg_rct.centerx -= 1
-        # if key_states[pg.K_RIGHT] == True: kkimg_rct.centerx += 1
-
-        # # 練習7
-        # if check_bound(kkimg_rct, screen_rct) != (1, 1): # 領域外だったら
-        #     if key_states[pg.K_UP]    == True: kkimg_rct.centery += 1
-        #     if key_states[pg.K_DOWN]  == True: kkimg_rct.centery -= 1
-        #     if key_states[pg.K_LEFT]  == True: kkimg_rct.centerx += 1
-        #     if key_states[pg.K_RIGHT] == True: kkimg_rct.centerx -= 1
-        # screen_sfc.blit(kkimg_sfc, kkimg_rct)
+            if event.type==pg.KEYDOWN and event.key==pg.K_SPACE:
+                beam=kkt.attack()
         kkt.update(scr)
 
-        # # 練習6
-        # bmimg_rct.move_ip(vx, vy)
-        # # 練習5
-        # screen_sfc.blit(bmimg_sfc, bmimg_rct)
-        # # 練習7
-        # yoko, tate = check_bound(bmimg_rct, screen_rct)
-        # vx *= yoko
-        # vy *= tate
         bkd.update(scr)
-        
-        # 練習8
-        # if kkimg_rct.colliderect(bmimg_rct): return 
-        if kkt.rct.colliderect(bkd.rct):
-            return
+        beam.update(scr)    
+        if kkt.rct.colliderect(bkd.rct)!=0:
+            check_Add.GameOver(scr)
         
         pg.display.update()
         clock.tick(1000)
 
 
-# 練習7
 def check_bound(rct, scr_rct):
     '''
     [1] rct: こうかとん or 爆弾のRect
