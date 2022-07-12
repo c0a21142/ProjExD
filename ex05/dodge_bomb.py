@@ -112,6 +112,13 @@ class Addfunction:
             if (x, y) != (1,1):
                 _.vx *= x*self.speed #yoko
                 _.vy *= -y*self.speed #tate
+class Add2:
+    def __init__(self):
+        pass
+class Add3:
+    def __init__(self):
+        pass
+
 
 
 def main():
